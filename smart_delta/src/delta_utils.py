@@ -1,5 +1,5 @@
 from struct import unpack
-from typing import Tuple, Iterable, List, Callable
+from typing import Tuple, Iterable, List, Callable, Union
 
 from smart_delta.src import (
     UNMARK_MARK,
@@ -36,7 +36,7 @@ def split_payload(payload: bytes) -> Tuple[bytes, bytes]:
     return payload[:split_index], payload[split_index + 1 :]
 
 
-def replace_signs(data: str, to_replace: str, replace_with: str) -> str:
+def replace_signs(data: Union[str, bytes], to_replace: Union[str, bytes], replace_with: Union[str, bytes]) -> Union[str, bytes]:
     is_after_mark = False
     new_data = data
     for index, char in enumerate(data):
@@ -54,7 +54,6 @@ def replace_signs(data: str, to_replace: str, replace_with: str) -> str:
         elif is_after_mark:
             is_after_mark = False
     return new_data
-
 
 def range_diff(
     data_0: bytes, data_1: bytes, max_diff_length: int, min_length_for_fit
