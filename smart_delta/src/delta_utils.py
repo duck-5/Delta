@@ -68,10 +68,19 @@ def range_fit(data_0: bytes, data_1: bytes) -> int:
     
 
 def range_fit(data_0: bytes, data_1: bytes) -> int:
-    for i in range(min(len(data_0), len(data_1))):
+    max_fit = min(len(data_0), len(data_1))
+    for i in range(max_fit):
         if data_0[i] != data_1[i]:
             return i
-    return i
+    return max_fit
+    
+
+def range_fit(data_0: bytes, data_1: bytes) -> int:
+    max_fit = min(len(data_0), len(data_1))
+    for i in range(max_fit):
+        if data_0[i] != data_1[i]:
+            return i
+    return max_fit
     
 
 def range_diff(
@@ -88,7 +97,9 @@ def range_diff(
     ] = lambda index_0, index_1: (
         range_fit(data_0=data_0[index_0:], data_1=data_1[index_1:]) >= min_length_for_fit
     )
-
+    
+    results: List[Tuple] = [(len(data_0), len(data_1))]
+    results_score: List[int] = [0]
     while index_0_for_0 < len_data_0 and index_1_for_1 < len_data_1:
         while True:
             if not (
@@ -96,11 +107,15 @@ def range_diff(
             ) and not (index_0_for_1 < max_diff_length and index_0_for_1 < len_data_0):
                 break
 
-            if check_if_fit_found(index_0_for_0, index_1_for_0):
-                return index_0_for_0, index_1_for_0
-
-            if check_if_fit_found(index_0_for_1, index_1_for_1):
-                return index_0_for_1, index_1_for_1
+            data_0_fit_len = range_fit(data_0=data_0[index_0_for_0:], data_1=data_1[index_1_for_0:])
+            if data_0_fit_len >= min_length_for_fit:
+                results.append((index_0_for_0, index_1_for_0))
+                results_score.append(data_0_fit_len)
+            
+            data_1_fit_len = range_fit(data_0=data_0[index_0_for_1:], data_1=data_1[index_1_for_1:])
+            if data_1_fit_len >= min_length_for_fit:
+                results.append((index_0_for_1, index_1_for_1))
+                results_score.append(data_1_fit_len)
 
             index_1_for_0 += 1
             index_0_for_1 += 1
@@ -109,4 +124,5 @@ def range_diff(
         index_1_for_0 = 0
         index_0_for_1 = 0
         index_1_for_1 += 1
-    return len_data_0, len_data_1
+    
+    return results, results_score

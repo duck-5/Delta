@@ -128,12 +128,15 @@ def generate_delta(
         if data_0[index_0] != data_1[index_1]:
             diff_beginning_index_0 = index_0
             diff_beginning_index_1 = index_1
-            diff_ending_0, diff_ending_1 = range_diff(
+            results, scores = range_diff(
                 data_0=data_0[diff_beginning_index_0:],
                 data_1=data_1[diff_beginning_index_1:],
                 max_diff_length=max_diff_length,
                 min_length_for_fit=min_length_for_fit,
             )
+            print(results)
+            print(scores)
+            diff_ending_0, diff_ending_1 = results[scores.index(max(scores))]
             diff_ending_0 += diff_beginning_index_0
             diff_ending_1 += diff_beginning_index_1
 
@@ -226,6 +229,6 @@ Hi. My name is yuval and I like cookies. I like cookies because a lot of reasons
 text_2 = b"""
 Hi. My name is yuval and I like cookies because I like cookies because a lot of reasons. a lot of reasons.
 """
-res = generate_opt_delta(text_1, text_2, 1000, 1000)
+res = generate_delta(text_1, text_2, 1000, 1)
 print("Res:")
 print(res)
