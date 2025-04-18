@@ -138,7 +138,8 @@ def range_diff(
     
     results: List[Tuple] = [(len(data_0), len(data_1))]
     results_score: List[int] = [0]
-    while index_0_for_0 < len_data_0 and index_1_for_1 < len_data_1:
+    max_score = 0
+    while index_0_for_0 < len(data_0) and index_1_for_1 < len(data_1):
         while True:
             if not (
                 index_1_for_0 < max_diff_length and index_1_for_0 < len_data_1
@@ -147,13 +148,15 @@ def range_diff(
 
             data_0_fit_len = range_fit(data_0=data_0[index_0_for_0:], data_1=data_1[index_1_for_0:])
             if data_0_fit_len >= min_length_for_fit:
-                results.append((index_0_for_0, index_1_for_0))
-                results_score.append(data_0_fit_len)
+                if data_0_fit_len > max_score:
+                    results.append((index_0_for_0, index_1_for_0))
+                    max_score = data_0_fit_len
             
             data_1_fit_len = range_fit(data_0=data_0[index_0_for_1:], data_1=data_1[index_1_for_1:])
             if data_1_fit_len >= min_length_for_fit:
-                results.append((index_0_for_1, index_1_for_1))
-                results_score.append(data_1_fit_len)
+                if data_1_fit_len > max_score:
+                    results.append((index_0_for_1, index_1_for_1))
+                    max_score = data_1_fit_len
 
             index_1_for_0 += 1
             index_0_for_1 += 1
@@ -163,4 +166,4 @@ def range_diff(
         index_0_for_1 = 0
         index_1_for_1 += 1
     
-    return results, results_score
+    return results[-1]

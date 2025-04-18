@@ -29,8 +29,9 @@ def old_generate_delta(
                 max_diff_length=max_diff_length,
                 min_length_for_fit=min_length_for_fit,
             )
+            diff_ending_0 += diff_beginning_index_0
+            diff_ending_1 += diff_beginning_index_1
 
-            print(f"{diff_ending_0=}, {diff_ending_1=}")
             delta_element = create_delta_element(
                 data_0,
                 data_1,
@@ -85,15 +86,12 @@ def generate_delta(
         if data_0[index_0] != data_1[index_1]:
             diff_beginning_index_0 = index_0
             diff_beginning_index_1 = index_1
-            results, scores = range_diff(
+            diff_ending_0, diff_ending_1 = range_diff(
                 data_0=data_0[diff_beginning_index_0:],
                 data_1=data_1[diff_beginning_index_1:],
                 max_diff_length=max_diff_length,
                 min_length_for_fit=min_length_for_fit,
             )
-            print(results)
-            print(scores)
-            diff_ending_0, diff_ending_1 = results[scores.index(max(scores))]
             diff_ending_0 += diff_beginning_index_0
             diff_ending_1 += diff_beginning_index_1
 
@@ -184,11 +182,18 @@ Hi. My name is yuval and I like cookies. I like cookies because a lot of reasons
 """
 
 text_2 = b"""
-Hi. My name is yuval and I like cookies because I like cookies because a lot of reasons. a lot of reasons.
+Hi. My name is yuval and I like because I like cookies because a lot of reasons. a lot of reasons.
 """
-res = generate_delta(text_1, text_2, 1000, 1)
+shit = 5
+import time
+
+s = time.time()
+res = generate_delta(text_1, text_2, 1000, shit)
+print(time.time() - s)
 print("Res:")
-print(res)
-res = old_generate_delta(text_1, text_2, 1000, 4)
+print(res, sum([len(ele) for ele in res]))
+s = time.time()
+res = old_generate_delta(text_1, text_2, 1000, shit)
+print(time.time() - s)
 print("old Res:")
-print(res)
+print(res, sum([len(ele) for ele in res]))
