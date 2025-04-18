@@ -68,4 +68,14 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    t1 = "Hi my name is yuval"
+    t2 = "Hi my name was yuval"
+    delta_ = delta_generator.DeltaGenerator(
+        data_0=t1,
+        data_1=t2,
+        max_diff_length=3,
+        min_length_for_fit=1,
+    )
+    elements = delta_.generate_delta()
+    print(elements)
+    delta_ = bytes(delta_)  # main()
