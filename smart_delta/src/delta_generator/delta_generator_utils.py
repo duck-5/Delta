@@ -7,14 +7,13 @@ from smart_delta.src import (
     REPLACEMENT_MARK,
 )
 
-from smart_delta.src.delta_utils import range_diff
+from smart_delta.src.delta_utils import range_diff, old_range_diff
 from smart_delta.src.delta_element import DeltaElement
 
 
-def generate_opt_delta(
+def old_generate_delta(
     data_0: str, data_1: str, max_diff_length: int, min_length_for_fit: int
 ):
-    print(f"entered with {min_length_for_fit=}, {data_0=}, {data_1=}")
     diff_beginning_index_0 = None
     delta_elements = []
 
@@ -22,73 +21,31 @@ def generate_opt_delta(
 
     while index_0 < len(data_0) and index_1 < len(data_1):
         if data_0[index_0] != data_1[index_1]:
-            print("entered if")
             diff_beginning_index_0 = index_0
             diff_beginning_index_1 = index_1
+            diff_ending_0, diff_ending_1 = old_range_diff(
+                data_0=data_0[diff_beginning_index_0:],
+                data_1=data_1[diff_beginning_index_1:],
+                max_diff_length=max_diff_length,
+                min_length_for_fit=min_length_for_fit,
+            )
 
-            options = []
-            for min_length_for_fit in range(3, 10):
-                elements = []
-                diff_beginning_index_0 = index_0
-                diff_beginning_index_1 = index_1
-
-                diff_ending_0, diff_ending_1 = range_diff(
-                    data_0=data_0[diff_beginning_index_0:],
-                    data_1=data_1[diff_beginning_index_1:],
-                    max_diff_length=max_diff_length,
-                    min_length_for_fit=min_length_for_fit,
-                )
-
-                diff_ending_0 += diff_beginning_index_0
-                diff_ending_1 += diff_beginning_index_1
-
-            
-                
-                delta_element = create_delta_element(
-                    data_0,
-                    data_1,
-                    diff_beginning_index_0,
-                    diff_ending_0,
-                    diff_beginning_index_1,
-                    diff_ending_1,
-                )
-                if delta_element is not None:
-                   elements.append(delta_element)
-
-                print(diff_ending_0, diff_ending_1, len(data_0), len(data_1))
-                if diff_ending_0 == len(data_0) or diff_ending_1 == len(data_1):
-                    return elements
-                
-                n_opt = []
-                for n_min_length_for_fit in range(3, 10):
-                    print(f"searching generations... {n_min_length_for_fit=}")
-                    n_opt.append(
-                        generate_opt_delta(
-                            data_0=data_0[diff_ending_0:],
-                            data_1=data_1[diff_ending_1:],
-                            max_diff_length=1000,
-                            min_length_for_fit=n_min_length_for_fit,
-                        )
-                    )
-                sizes = [sum([len(ele) for ele in elems]) for elems in n_opt]
-                # print(sizes)
-                best_index = sizes.index(min(sizes))
-                elements += n_opt[best_index]
-
-                options.append(elements)
-
-            sizes = [sum([len(ele) for ele in elems]) for elems in options]
-            # print(options)
-            best_index = sizes.index(min(sizes))
-            delta_elements = options[best_index]
-            print("EXITED!")
-            return delta_elements
+            print(f"{diff_ending_0=}, {diff_ending_1=}")
+            delta_element = create_delta_element(
+                data_0,
+                data_1,
+                diff_beginning_index_0,
+                diff_ending_0,
+                diff_beginning_index_1,
+                diff_ending_1,
+            )
+            if delta_element is not None:
+                delta_elements.append(delta_element)
 
             index_0 = diff_ending_0 - 1
             index_1 = diff_ending_1 - 1
 
             diff_beginning_index_0 = None
-            break
 
         index_0 += 1
         index_1 += 1
@@ -231,4 +188,7 @@ Hi. My name is yuval and I like cookies because I like cookies because a lot of 
 """
 res = generate_delta(text_1, text_2, 1000, 1)
 print("Res:")
+print(res)
+res = old_generate_delta(text_1, text_2, 1000, 4)
+print("old Res:")
 print(res)
