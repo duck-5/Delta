@@ -61,6 +61,9 @@ def range_diff(
 ) -> Tuple[int, int]:
     index_0_for_0, index_1_for_0 = 0, 0
     index_0_for_1, index_1_for_1 = 0, 0
+    
+    len_data_0 = len(data_0)
+    len_data_1 = len(data_1)
 
     check_index_in_range: Callable[
         [int, bytes], bool
@@ -72,7 +75,7 @@ def range_diff(
         data_0[index_0:][:min_length_for_fit] == data_1[index_1:][:min_length_for_fit]
     )
 
-    while index_0_for_0 < len(data_0) and index_1_for_1 < len(data_1):
+    while index_0_for_0 < len_data_0 and index_1_for_1 < len_data_1:
         while True:
             if not check_index_in_range(
                 index_1_for_0, data_1

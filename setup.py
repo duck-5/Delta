@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+from Cython.Build import cythonize
 
 setup(
     name="smart_delta",
@@ -8,6 +9,7 @@ setup(
     long_description=open("README.md").read(),
     url="https://github.com/JesusDMan/BackupSyncer",
     author="JesusDMan",
+    ext_modules=cythonize("smart_delta/src/delta_utils.py"),
     entry_points={
         "console_scripts": [
             "delta-gen = smart_delta.bin.create_delta:main",
