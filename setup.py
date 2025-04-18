@@ -9,6 +9,7 @@ setup(
     long_description=open("README.md").read(),
     url="https://github.com/JesusDMan/BackupSyncer",
     author="JesusDMan",
+    install_requires = ["cython"],
     ext_modules=cythonize("smart_delta/src/delta_utils.py"),
     entry_points={
         "console_scripts": [
