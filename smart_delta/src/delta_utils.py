@@ -60,6 +60,20 @@ def replace_signs(
     return new_data
 
 
+def range_fit(data_0: bytes, data_1: bytes) -> int:
+    for i in range(min(len(data_0), len(data_1))):
+        if data_0[i] != data_1[i]:
+            return i
+    return i
+    
+
+def range_fit(data_0: bytes, data_1: bytes) -> int:
+    for i in range(min(len(data_0), len(data_1))):
+        if data_0[i] != data_1[i]:
+            return i
+    return i
+    
+
 def range_diff(
     data_0: bytes, data_1: bytes, max_diff_length: int, min_length_for_fit
 ) -> Tuple[int, int]:
@@ -72,8 +86,7 @@ def range_diff(
     check_if_fit_found: Callable[
         [bytes, bytes, int, int], bool
     ] = lambda index_0, index_1: (
-        data_0[index_0 : index_0 + min_length_for_fit]
-        == data_1[index_1 : index_1 + min_length_for_fit]
+        range_fit(data_0=data_0[index_0:], data_1=data_1[index_1:]) >= min_length_for_fit
     )
 
     while index_0_for_0 < len_data_0 and index_1_for_1 < len_data_1:
