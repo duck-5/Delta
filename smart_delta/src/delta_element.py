@@ -59,6 +59,10 @@ class DeltaElement:
             return True
         return False
 
+        
+    def __len__(self) -> int:
+        return len(bytes(self))
+
     def fix_payloads(self) -> Tuple[bytes, bytes]:
         fixed_payload, fixed_second_payload = self.payload, self.second_payload
         for possible_sign in [UNMARK_MARK] + REGULAR_MARKS:

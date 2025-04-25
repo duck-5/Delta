@@ -64,21 +64,15 @@ def range_diff(
     len_data_0 = len(data_0)
     len_data_1 = len(data_1)
 
-    check_index_in_range: Callable[
-        [int, bytes], bool
-    ] = lambda index, data: index < max_diff_length and index < len(data)
-
     check_if_fit_found: Callable[
         [bytes, bytes, int, int], bool
     ] = lambda index_0, index_1: (
-        data_0[index_0:][:min_length_for_fit] == data_1[index_1:][:min_length_for_fit]
+        data_0[index_0:index_0 + min_length_for_fit] == data_1[index_1:index_1 + min_length_for_fit]
     )
 
     while index_0_for_0 < len_data_0 and index_1_for_1 < len_data_1:
         while True:
-            if not check_index_in_range(
-                index_1_for_0, data_1
-            ) and not check_index_in_range(index_0_for_1, data_0):
+            if not (index_1_for_0 < max_diff_length and index_1_for_0 < len_data_1) and not (index_0_for_1 < max_diff_length and index_0_for_1 < len_data_0):
                 break
 
             if check_if_fit_found(index_0_for_0, index_1_for_0):
@@ -94,4 +88,4 @@ def range_diff(
         index_1_for_0 = 0
         index_0_for_1 = 0
         index_1_for_1 += 1
-    return len(data_0), len(data_1)
+    return len_data_0, len_data_1

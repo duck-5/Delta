@@ -1,3 +1,4 @@
+import time
 from typing import List, Optional, Union
 
 from smart_delta.src import (
@@ -8,7 +9,8 @@ from smart_delta.src import (
     delta_utils,
 )
 from smart_delta.src.delta_element import DeltaElement
-
+import logging
+import tqdm
 
 class DeltaGenerator:
     DEFAULT_MAX_DIFF_LENGTH = 1000
@@ -40,12 +42,24 @@ class DeltaGenerator:
 
         self.delta_elements: List[DeltaElement] = []
 
+        self.logger = logging.getLogger("Delta")
+        logging.basicConfig(level=logging.INFO)
+        
     def generate_delta(self) -> List[DeltaElement]:
+        starting_time = time.time()
+        with tqdm.tqdm(total=max(len(self.data_0), len(self.data_1)), unit="b", colour="green") as pbar:
+            result = self._generate_delta(pbar)
+        self.logger.info(
+            f"Finished operation in {time.time() - starting_time:.3} seconds\n" \
+            f"Detected {len(result)} changes that sum up to {sum([len(ele) for ele in result])/1000} kb"
+            )
+        return result
+    
+    def _generate_delta(self, pbar) -> List[DeltaElement]:
         diff_beginning_index_0 = None
         self.delta_elements = []
 
         index_0, index_1 = 0, 0
-
         while index_0 < len(self.data_0) and index_1 < len(self.data_1):
             if self.data_0[index_0] != self.data_1[index_1]:
                 diff_beginning_index_0 = index_0
@@ -56,6 +70,8 @@ class DeltaGenerator:
                     max_diff_length=self.max_diff_length,
                     min_length_for_fit=self.min_length_for_fit,
                 )
+                pbar.update(max(diff_ending_0, diff_ending_1))
+                
                 diff_ending_0 += diff_beginning_index_0
                 diff_ending_1 += diff_beginning_index_1
 
@@ -75,11 +91,11 @@ class DeltaGenerator:
 
             index_0 += 1
             index_1 += 1
+            pbar.update(1)
 
         if not diff_beginning_index_0:
             diff_beginning_index_0 = index_0
             diff_beginning_index_1 = index_1
-
         if index_0 < len(self.data_0) and index_1 >= len(self.data_1):
             self.delta_elements.append(
                 DeltaElement(
@@ -97,6 +113,7 @@ class DeltaGenerator:
                     self.data_1[diff_beginning_index_1:],
                 )
             )
+        pbar.update(len(self.delta_elements[-1]))
         return self.delta_elements
 
     def create_delta_element(

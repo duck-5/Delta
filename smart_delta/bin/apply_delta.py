@@ -1,8 +1,9 @@
 import argparse
 import os
+import time
 from typing import Optional
 
-from smart_delta.src import delta_applier
+from smart_delta.src import delta_applier, delta_utils
 
 
 def apply_delta_on_file(
@@ -43,4 +44,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    s = time.time()
+    delta_utils.range_diff(data_0=b"a"*2000, data_1=b"b"*2000, max_diff_length=2000, min_length_for_fit=100)
+    print(f"Finished in {time.time() - s}")
