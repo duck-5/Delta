@@ -59,7 +59,6 @@ class DeltaElement:
             return True
         return False
 
-        
     def __len__(self) -> int:
         return len(bytes(self))
 

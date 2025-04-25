@@ -12,6 +12,7 @@ from smart_delta.src.delta_element import DeltaElement
 import logging
 import tqdm
 
+
 class DeltaGenerator:
     DEFAULT_MAX_DIFF_LENGTH = 1000
     DEFAULT_MIN_LENGTH_FOR_FIT = 3
@@ -44,17 +45,19 @@ class DeltaGenerator:
 
         self.logger = logging.getLogger("Delta")
         logging.basicConfig(level=logging.INFO)
-        
+
     def generate_delta(self) -> List[DeltaElement]:
         starting_time = time.time()
-        with tqdm.tqdm(total=max(len(self.data_0), len(self.data_1)), unit="b", colour="green") as pbar:
+        with tqdm.tqdm(
+            total=max(len(self.data_0), len(self.data_1)), unit="b", colour="green"
+        ) as pbar:
             result = self._generate_delta(pbar)
         self.logger.info(
-            f"Finished operation in {time.time() - starting_time:.3} seconds\n" \
+            f"Finished operation in {time.time() - starting_time:.3} seconds\n"
             f"Detected {len(result)} changes that sum up to {sum([len(ele) for ele in result])/1000} kb"
-            )
+        )
         return result
-    
+
     def _generate_delta(self, pbar) -> List[DeltaElement]:
         diff_beginning_index_0 = None
         self.delta_elements = []
@@ -71,7 +74,7 @@ class DeltaGenerator:
                     min_length_for_fit=self.min_length_for_fit,
                 )
                 pbar.update(max(diff_ending_0, diff_ending_1))
-                
+
                 diff_ending_0 += diff_beginning_index_0
                 diff_ending_1 += diff_beginning_index_1
 
