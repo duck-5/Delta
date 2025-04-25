@@ -1,3 +1,4 @@
+from cmath import log
 from struct import unpack
 from typing import Tuple, Iterable, List, Callable, Union
 
@@ -77,9 +78,12 @@ def range_fit(data_0: bytes, data_1: bytes) -> int:
 
 def range_fit(data_0: bytes, data_1: bytes) -> int:
     max_fit = min(len(data_0), len(data_1))
-    for i in range(max_fit):
-        if data_0[i] != data_1[i]:
-            return i
+    data_0_int = int.from_bytes(data_0[:max_fit])
+    data_1_int = int.from_bytes(data_1[:max_fit])
+    xored = data_0_int ^ data_1_int
+    if xored:
+        index_of_change_from_left = log(xored, 2) // 8
+        return max_fit - index_of_change_from_left
     return max_fit
     
 def old_range_diff(
