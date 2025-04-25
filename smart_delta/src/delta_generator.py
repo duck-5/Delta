@@ -52,9 +52,12 @@ class DeltaGenerator:
             total=max(len(self.data_0), len(self.data_1)), unit="b", colour="green"
         ) as pbar:
             result = self._generate_delta(pbar)
+        
+        delta_size_kb = sum([len(ele) for ele in result])/1000
         self.logger.info(
-            f"Finished operation in {time.time() - starting_time:.3} seconds\n"
-            f"Detected {len(result)} changes that sum up to {sum([len(ele) for ele in result])/1000} kb"
+            f"Finished operation in {time.time() - starting_time:.3f} seconds\n"
+            f"Detected {len(result)} changes that sum up to {delta_size_kb} kb\n"
+            f"Delta ratio (delta file size / original file size) =  {delta_size_kb / (len(self.data_0)/1000):.3f}"
         )
         return result
 
